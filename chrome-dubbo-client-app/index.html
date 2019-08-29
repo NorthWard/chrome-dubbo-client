@@ -1,0 +1,27 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+</head>
+  <body>
+  <div id="url-content">
+     zk: <input name="zk" id="zk"/><br/>
+     dubbo ip:<input name="dubbo_host" id="dubbo_host" value="localhost">:<input name="dubbo_port" id="dubbo_port" value="20881"><br/>
+  </div>
+  <div id="service-content">
+    服务名: <input name="service" id="service" /><br/>
+    类名: <input name="method" id="method"><br/>
+    参数: <input name="params" id="params"><br/>
+  </div>
+  <button type="button" id="executor" >执行</button>
+  <div id="console-content">
+    <div><button type="button" id="clear" >清空控制台</button></div>
+    <div><textarea rows="30" cols="100" id="console"></textarea></div>
+  </div>
+  </body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/tcp-client.js"></script>
+
+<script src="js/ansi-converter.js"></script>
+<script src="js/dubbo-client.js"></script>
+</html>

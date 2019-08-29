@@ -1,0 +1,21 @@
+{
+  "name": "dubbo-client",
+  "description": "simple dubbo client for dev",
+  "version": "0.1",
+  "app": {
+    "background": {
+      "scripts": [
+        "js/background.js"
+      ]
+    }
+  },
+  "permissions": [
+    "app.window.alwaysOnTop"
+  ],
+  "sockets": {
+    "tcp": {
+      "connect": "*:*"
+    }
+  },
+  "manifest_version": 2
+}
