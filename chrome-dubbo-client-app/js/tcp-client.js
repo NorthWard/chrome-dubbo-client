@@ -23,10 +23,12 @@ Author: Boris Smus (smus@chromium.org)
    *
    * @param {String} host The remote host to connect to
    * @param {Number} port The port to connect to at the remote host
+   * @param {Object} logger the logger
    */
-  function TcpClient(host, port) {
+  function TcpClient(host, port, logger) {
     this.host = host;
     this.port = port;
+    this.logger = logger;
     this._onReceive = this._onReceive.bind(this);
     this._onReceiveError = this._onReceiveError.bind(this);
 
@@ -41,6 +43,7 @@ Author: Boris Smus (smus@chromium.org)
     // Socket.
     this.socketId = null;
     this.isConnected = false;
+
 
     log('initialized tcp client');
   }
@@ -233,15 +236,25 @@ Author: Boris Smus (smus@chromium.org)
   /**
    * Wrapper function for logging
    */
-  function log(msg) {
-    console.log(msg);
+  TcpClient.prototype.log = function(msg) {
+    if(this.logger === null){
+        console.log(msg);
+    }else{
+        this.logger(msg);
+    }
+
   }
 
   /**
    * Wrapper function for error logging
    */
-  function error(msg) {
-    console.error(msg);
+  TcpClient.prototype.error = function(msg) {
+    if(this.logger === null){
+        console.error(msg);
+    }else{
+      this.logger(msg)
+    }
+
   }
 
   exports.TcpClient = TcpClient;

@@ -9,11 +9,13 @@
      dubbo ip:<input name="dubbo_host" id="dubbo_host" value="localhost">:<input name="dubbo_port" id="dubbo_port" value="20881"><br/>
   </div>
   <div id="service-content">
-    服务名: <input name="service" id="service" /><br/>
-    类名: <input name="method" id="method"><br/>
+    命令: <input name="service" id="service" /><br/>
     参数: <input name="params" id="params"><br/>
   </div>
+  <button type="button" id="connect" >连接服务器</button>
   <button type="button" id="executor" >执行</button>
+
+
   <div id="console-content">
     <div><button type="button" id="clear" >清空控制台</button></div>
     <div><textarea rows="30" cols="100" id="console"></textarea></div>
