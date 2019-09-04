@@ -4,13 +4,12 @@
 
 
 chrome.app.runtime.onLaunched.addListener(function() {
-    chrome.app.window.create('index.html', {
+    chrome.app.window.create('client.html', {
         id: "mainwin",
         innerBounds: {
-            width: 880,
-            height: 480
+            width: 2000,
+            height: 1236
         },
-        alwaysOnTop: true,
         visibleOnAllWorkspaces: true
     });
 });
