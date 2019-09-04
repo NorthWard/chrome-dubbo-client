@@ -3,20 +3,39 @@ var ansiConv = new AnsiConverter();
 var tcpClient;
 $(document).ready(function(){
     $("#executor").click(function () {
-        var host = $("#dubbo_host").val();
-        var port = $("#dubbo_port").val();
-        if(isEmptyStr(host) || isEmptyStr(port)){
-            log("host and port can not be empty");
+        if(!hasConnect()){
+            log("has not connected");
             return
         }
-        tcpClient = new TcpClient(host, parseInt(port));
-        connect();
+        invoke()
 
     });
     $("#clear").click(function () {
         $("#console").text("");
     });
+    $("#connect").click(function () {
+        if(hasConnect()){
+           log("has already connected")
+        }else{
+            var host = $("#dubbo_host").val();
+            var port = $("#dubbo_port").val();
+            if(isEmptyStr(host) || isEmptyStr(port)){
+                log("host and port can not be empty");
+                return
+            }
+            tcpClient = new TcpClient(host, parseInt(port), function(msg){
+                log(msg)
+            });
+            tcpClient.logger = function (msg) {
+                log(msg);
+            }
+            connect();
+        }
+    });
 });
+function hasConnect() {
+   return tcpClient && tcpClient !== null && tcpClient.isConnected !== null && tcpClient.isConnected;
+}
 function onResponse(data){
     // Run response through ANSI colorizer.
    var formattedData = ansiConv.formatAnsi(data);
@@ -25,13 +44,12 @@ function onResponse(data){
                // Render response in the terminal.
    //var output = lines.join('<br/>');
     log(formattedData);
-    tcpClient.disconnect();
 }
 function invoke(){
     var service = $("#service").val();
     var method = $("#method").val();
     var param = $("#params").val();
-    var command = "invoke " + service + "." + method + "(" + param + ")";
+    var command = service + " --no-prompt " + param;
     tcpClient.sendMessage(command, function (res) {
         var obj = JSON.stringify(res);
         log(obj);
@@ -44,7 +62,6 @@ function connect() {
         tcpClient.addResponseListener(function(data) {
            onResponse(data);
         });
-        invoke();
 
     });
 }
