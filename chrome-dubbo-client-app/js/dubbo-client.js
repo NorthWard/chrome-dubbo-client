@@ -32,6 +32,14 @@ $(document).ready(function(){
             connect();
         }
     });
+
+    $("#ls").click(function () {
+        if(!hasConnect()){
+            log("has not connected");
+            return
+        }
+        ls()
+    });
 });
 function hasConnect() {
    return tcpClient && tcpClient !== null && tcpClient.isConnected !== null && tcpClient.isConnected;
@@ -55,6 +63,14 @@ function invoke(){
         log(obj);
     })
 }
+function ls() {
+    var command = " ls -l --no-prompt"
+    tcpClient.sendMessage(command, function (res) {
+        var obj = JSON.stringify(res);
+        log("ls 返回结果: " + obj);
+    })
+
+}
 
 function connect() {
     tcpClient.connect(function() {
@@ -67,7 +83,7 @@ function connect() {
 }
 
 function log(str) {
-    $("#console").append(str + "\n");
+    $("#console").append(str +  "\n");
 }
 
 function isEmptyStr(value) {

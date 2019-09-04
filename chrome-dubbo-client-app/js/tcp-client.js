@@ -44,8 +44,6 @@ Author: Boris Smus (smus@chromium.org)
     // Socket.
     this.socketId = null;
     this.isConnected = false;
-
-
     this.logger('initialized tcp client');
   }
 
@@ -58,7 +56,6 @@ Author: Boris Smus (smus@chromium.org)
   TcpClient.prototype.connect = function(callback) {
     // Register connect callback.
     this.callbacks.connect = callback;
-
     chrome.sockets.tcp.create({}, this._onCreate.bind(this));
   };
 
@@ -72,7 +69,6 @@ Author: Boris Smus (smus@chromium.org)
   TcpClient.prototype.sendMessage = function(msg, callback) {
     // Register sent callback.
     this.callbacks.sent = callback;
-
     this._stringToArrayBuffer(msg + '\n', function(arrayBuffer) {
       chrome.sockets.tcp.send(this.socketId, arrayBuffer, this._onSendComplete.bind(this));
     }.bind(this));
@@ -113,11 +109,10 @@ Author: Boris Smus (smus@chromium.org)
    */
   TcpClient.prototype._onCreate = function(createInfo) {
     if (chrome.runtime.lastError) {
-        this.logger('Unable to create socket: ' + chrome.runtime.lastError.message);
+        this.logger('Unable to create socket: chrome.runtime.lastError=' + chrome.runtime.lastError.message);
     }
 
     this.socketId = createInfo.socketId;
-    //this.isConnected = true;
     chrome.sockets.tcp.connect(this.socketId, this.host, this.port, this._onConnectComplete.bind(this));
   };
 
@@ -131,22 +126,18 @@ Author: Boris Smus (smus@chromium.org)
    */
   TcpClient.prototype._onConnectComplete = function(resultCode) {
     if (resultCode < 0) {
-
-        this.logger('Unable to connect to server');
-
-      return;
+        this.logger('Unable to connect to server, resultCode=' + resultCode);
+        return;
     }
-
     // Start listening to message events.
     chrome.sockets.tcp.onReceive.addListener(this._onReceive);
     chrome.sockets.tcp.onReceiveError.addListener(this._onReceiveError);
 
     if (this.callbacks.connect) {
-        this.logger('connect complete');
       this.callbacks.connect();
-    }
       this.isConnected=true;
-      this.logger('onConnectComplete');
+    }
+
   };
 
   /**
@@ -166,8 +157,6 @@ Author: Boris Smus (smus@chromium.org)
       return;
 
     if (this.callbacks.recv) {
-        var obj = JSON.stringify(receiveInfo);
-        this.logger('onDataRead' + obj);
       // Convert ArrayBuffer to string.
       this._arrayBufferToString(receiveInfo.data, function(str) {
         this.callbacks.recv(str);
@@ -186,9 +175,9 @@ Author: Boris Smus (smus@chromium.org)
   TcpClient.prototype._onReceiveError = function(info) {
       var obj = JSON.stringify(info);
       this.logger('Unable to receive data from socket: ' + obj);
-    if (info.socketId !== this.socketId)
-      return;
-    this.isConnected = false;
+      if (info.socketId !== this.socketId)
+        return;
+      this.isConnected = false;
 
   };
 
@@ -200,7 +189,8 @@ Author: Boris Smus (smus@chromium.org)
    * @param {Object} sendInfo The outgoing message
    */
   TcpClient.prototype._onSendComplete = function(sendInfo) {
-      this.logger('onSendComplete');
+    this.logger('onSendComplete');
+    //sendInfo {"bytesSent":16,"resultCode":0}
     // Call sent callback.
     if (this.callbacks.sent) {
       this.callbacks.sent(sendInfo);
@@ -216,12 +206,9 @@ Author: Boris Smus (smus@chromium.org)
    */
   TcpClient.prototype._arrayBufferToString = function(buf, callback) {
     var reader = new FileReader();
-    var _logger = this.logger
     reader.onload = function(e) {
-        var obj = JSON.stringify(e);
-        _logger("e :" + obj)
         callback(e.target.result);
-    };
+    }.bind(this);
     var blob=new Blob([ buf ], { type: 'application/octet-stream' });
     reader.readAsText(blob);
   };
