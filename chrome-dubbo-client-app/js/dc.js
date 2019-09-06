@@ -7,15 +7,16 @@ $(document).ready(function(){
             log("has not connected");
             return
         }
-        invoke()
+        invoke();
 
     });
     $("#clear").click(function () {
         $("#console").text("");
     });
-    $("#connect").click(function () {
+    $("#dc-do-connect").click(function () {
         if(hasConnect()){
-           log("has already connected")
+            alert("已连接!");
+            log("has already connected")
         }else{
             var host = $("#dubbo_host").val();
             var port = $("#dubbo_port").val();
@@ -29,7 +30,7 @@ $(document).ready(function(){
             tcpClient.logger = function (msg) {
                 log(msg);
             }
-            connect();
+            connect();;
         }
     });
 
