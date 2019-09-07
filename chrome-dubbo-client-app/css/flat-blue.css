@@ -299,6 +299,8 @@
     background-color: #353d47;
     color: #FFF;
     border-color: #353d47; }
+  .flat-blue .btn.btn-primary:hover {
+    background-color: #22a7f0; }
   .flat-blue .btn.btn-success {
     background-color: #1ABC9C;
     color: #FFF;

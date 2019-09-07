@@ -4,6 +4,7 @@
 <head>
     <title>DUBBO-CLIENT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <!-- Fonts -->
 <!--    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300,400' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900' rel='stylesheet' type='text/css'>-->
@@ -32,12 +33,36 @@
                             <i class="fa fa-bars icon"></i>
                         </button>
                         <ol class="breadcrumb navbar-breadcrumb">
-                            <li><span id="dc-ip">localhost</span>:<span id="dc-port">20881</span></li>
+                            <input type="hidden" id="dc-ip" value="">
+                            <input type="hidden" id="dc-port" value="">
+                            <li><span id="current-ip-text"></span></li>
+                            <form class="form-inline" style="display:none" id="dc-add-server-form">
+                                <div class="form-group">
+                                    <label for="dc-add-ip">ip</label>
+                                    <input type="text" class="form-control" id="dc-add-ip" placeholder="localhost">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dc-add-port">port</label>
+                                    <input type="email" class="form-control" id="dc-add-port" placeholder="20881">
+                                </div>
+                                <button type="button" class="btn btn-primary btn-add-server" id="dc-do-add">确认新增</button>
+                                <button type="button" class="btn btn-primary btn-add-server" id="dc-cancel-add">取消新增</button>
+                            </form>
                         </ol>
                         <button type="button" class="navbar-right-expand-toggle pull-right visible-xs">
                             <i class="fa fa-th icon"></i>
                         </button>
                     </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-edit"></i></a>
+                            <ul class="dropdown-menu animated fadeInDown">
+                                <li class="title">
+                                    <button type="button" class="btn btn-primary" id="dc-add-server">点击新增服务器</button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </nav>
             <div class="side-menu sidebar-inverse">
@@ -46,32 +71,13 @@
                         <div class="navbar-header">
                             <a class="navbar-brand" href="#">
                                 <div class="icon fa fa-paper-plane"></div>
-                                <div class="title">IP列表</div>
+                                <div class="title">服务器列表</div>
                             </a>
                             <button type="button" class="navbar-expand-toggle pull-right visible-xs">
                                 <i class="fa fa-times icon"></i>
                             </button>
                         </div>
-                        <ul class="nav navbar-nav">
-                            <li>
-                                <a href="client.html">
-                                    <span class="icon fa fa-tachometer"></span>
-                                    <span class="title">10.10.10.204:20881</span>
-                                </a>
-                            </li>
-
-                            <li class="active panel panel-default">
-                                <a  href="client.html">
-                                    <span class="icon fa fa-file-text-o"></span>
-                                    <span class="title">10.10.10.205:20881</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="client.html">
-                                    <span class="icon fa fa-thumbs-o-up"></span>
-                                    <span class="title">10.10.10.205:20881</span>
-                                </a>
-                            </li>
+                        <ul class="nav navbar-nav" id="dc-connect-list">
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -133,9 +139,9 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="sub-title">控制台</div>
+                                    <div class="sub-title">控制台 <i class="fa fa-trash-o"></i></div>
                                     <div>
-                                        <textarea class="form-control" rows="8"></textarea>
+                                        <textarea class="form-control" rows="8" id="dc-console"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -165,6 +171,10 @@
             <script type="text/javascript" src="js/lib/ace/theme-github.js"></script>
             <!-- Javascript -->
             <script type="text/javascript" src="js/app.js"></script>
+            <script src="js/ansi-converter.js"></script>
+            <script type="text/javascript" src="js/tcp-client.js"></script>
+            <script type="text/javascript" src="js/dc.js"></script>
+
 </body>
 
 </html>

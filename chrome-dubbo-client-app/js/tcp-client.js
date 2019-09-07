@@ -53,9 +53,10 @@ Author: Boris Smus (smus@chromium.org)
    * @see http://developer.chrome.com/apps/sockets_tcp.html#method-create
    * @param {Function} callback The function to call on connection
    */
-  TcpClient.prototype.connect = function(callback) {
+  TcpClient.prototype.connect = function(onConnected, onDisConneted) {
     // Register connect callback.
-    this.callbacks.connect = callback;
+    this.callbacks.connect = onConnected;
+    this.callbacks.disconnect = onDisConneted;
     chrome.sockets.tcp.create({}, this._onCreate.bind(this));
   };
 
@@ -96,6 +97,9 @@ Author: Boris Smus (smus@chromium.org)
     chrome.sockets.tcp.close(this.socketId);
     this.socketId = null;
     this.isConnected = false;
+    if(this.callbacks.disconnect){
+        this.callbacks.disconnect();
+    }
   };
 
   /**
@@ -178,6 +182,9 @@ Author: Boris Smus (smus@chromium.org)
       if (info.socketId !== this.socketId)
         return;
       this.isConnected = false;
+      if(this.callbacks.disconnect){
+          this.callbacks.disconnect();
+      }
 
   };
 
