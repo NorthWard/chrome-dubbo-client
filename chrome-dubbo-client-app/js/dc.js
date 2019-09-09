@@ -50,7 +50,7 @@ $(document).ready(function(){
          var port = $(this).attr("data-port");
          setCurrent(ip, port);
     });
-    $("#executor").click(function () {
+    $("#dc-invoke").click(function () {
         if(!hasConnect()){
             log("has not connected");
             return
@@ -63,7 +63,6 @@ $(document).ready(function(){
     });
     $("#dc-do-connect").click(function () {
         if(hasConnect()){
-            alert("已连接!");
             log("has already connected")
         }else{
             var host = $("#dc-ip").val();
@@ -113,8 +112,7 @@ $(document).ready(function(){
         placeholder:"请选择要调用的service"
     });
 
-    $("#dc-service-select-list").on("change", function(e) {
-        console.log(e)
+    $("#dc-service-select-list").on("select2:select", function(e) {
         var toInvokeService = $("#dc-service-select-list").val();
         log("select " + toInvokeService)
         loadMethods(toInvokeService);
@@ -122,6 +120,10 @@ $(document).ready(function(){
     $("#dc-method-select-list").select2({
         placeholder:"请选择要调用的method",
         debug:true
+    });
+    $("#dc-method-select-list").on("select2:select", function(e) {
+        var toInvokeMethod = $("#dc-method-select-list").val();
+        parseMethod(toInvokeMethod);
     });
 });
 function hasConnect() {
@@ -136,11 +138,43 @@ function onResponse(data){
    //var output = lines.join('<br/>');
     log(formattedData);
 }
+function parseMethod(str){
+    var arr = str.split(" ");
+    var retType = arr[0];
+    var methodSign = arr[1];
+    var index = methodSign.indexOf("(");
+    var methodName = methodSign.substring(0, index);
+    var paramTypeList = methodSign.substring(index + 1, methodSign.length - 2);
+    var paramArr = paramTypeList.split(",");
+    var params = [];
+    for(var i=0; i<paramArr.length; i++){
+        if(paramArr[i].indexOf("java.lang") === 0){
+              if(paramArr[i].indexOf("String") > 0){
+                  params.push('"strParam"');
+              }else{
+                  params.push(1);
+              }
+        }else{
+            var json = "{'class':'"+ paramArr[i] + "'}"
+            params.push(json);
+        }
+    }
+    $("#dc-param-list").val(params.join(","));
+    return methodName;
+}
+function getRealMethodName(str){
+    var arr = str.split(" ");
+    var methodSign = arr[1];
+    var index = methodSign.indexOf("(");
+    var methodName = methodSign.substring(0, index);
+    return methodName;
+}
 function invoke(){
-    var service = $("#service").val();
-    var method = $("#method").val();
-    var param = $("#params").val();
-    var command = service + " --no-prompt " + param;
+    var toInvokeService = $("#dc-service-select-list").val();
+    var toInvokerMethod = $("#dc-method-select-list").val();
+    var param = $("#dc-param-list").val();
+    var command = "invoke  --no-prompt  " +  toInvokeService + "."  + getRealMethodName(toInvokerMethod) + "(" +  param + ")";
+    log("command :" + command);
     tcpClient.sendMessage(command, function (res) {
         var obj = JSON.stringify(res);
         log(obj);
@@ -182,6 +216,7 @@ function loadMethods(service) {
                 placeholder:"请选择要调用的method"
             });
         }
+        tcpClient.addResponseListener(onResponse);
 
     });
     tcpClient.sendMessage(command, function (res) {
