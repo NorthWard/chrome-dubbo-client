@@ -5,7 +5,7 @@ var ipList = [
     {ip:'localhost',port:20881},
     {ip:'10.204.8.56',port:20881},
     {ip:'10.204.8.57',port:20881},
-]
+];
 
 function getListTemplate(ip, port){
     if(isEmptyStr(ip) || isEmptyStr(port)){
@@ -108,6 +108,21 @@ $(document).ready(function(){
         ipList.push(newItem);
         createList();
     });
+    $("#dc-service-select-list").select2({
+        debug:true,
+        placeholder:"请选择要调用的service"
+    });
+
+    $("#dc-service-select-list").on("change", function(e) {
+        console.log(e)
+        var toInvokeService = $("#dc-service-select-list").val();
+        log("select " + toInvokeService)
+        loadMethods(toInvokeService);
+    });
+    $("#dc-method-select-list").select2({
+        placeholder:"请选择要调用的method",
+        debug:true
+    });
 });
 function hasConnect() {
    return tcpClient && tcpClient !== null && tcpClient.isConnected !== null && tcpClient.isConnected;
@@ -131,16 +146,48 @@ function invoke(){
         log(obj);
     })
 }
-function ls() {
-    var command = " ls -l --no-prompt";
+function loadServices() {
+    var command = " ls --no-prompt";
     tcpClient.addResponseListener(function(data) {
         log("ls 返回结果: " + data);
+        if(data){
+          var serviceList =  data.split("\n");
+          $("#dc-service-select-list").select2({
+              data:serviceList,
+              placeholder:"请选择要调用的service",
+              change: function () {
+                 var toInvokeService = $("#dc-service-select-list").val();
+                 log("select " + toInvokeService)
+                 loadMethods(toInvokeService);
+              }
+          });
+        }
+
     });
     tcpClient.sendMessage(command, function (res) {
         var obj = JSON.stringify(res);
         log("ls 发送结果: " + obj);
     });
 
+}
+function loadMethods(service) {
+    var command = " ls --no-prompt -l " + service;
+    tcpClient.addResponseListener(function(data) {
+        log("loadMethods 返回结果: " + data);
+        if(data){
+            var methodList =  data.split("\n");
+            $("#dc-method-select-list").empty();
+            $("#dc-method-select-list").select2({
+                data:methodList,
+                placeholder:"请选择要调用的method"
+            });
+        }
+
+    });
+    tcpClient.sendMessage(command, function (res) {
+        var obj = JSON.stringify(res);
+        log("loadMethods 发送结果: " + obj);
+    });
 }
 
 function connect() {
@@ -150,6 +197,8 @@ function connect() {
         $("#dc-do-connect").hide();
         $("#dc-connect-status").html("已连接");
         $("#dc-connect-status").removeClass("fa-remove").addClass("fa-check");
+        log("加载服务列表");
+        loadServices();
     }, function () {
         // 与服务器断开连接
         log("disConnected to server.");

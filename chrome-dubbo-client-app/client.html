@@ -21,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/flat-blue.css">
     <link rel="stylesheet" type="text/css" href="css/makeItScroll.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 
 <body class="flat-blue">
@@ -58,7 +59,7 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-edit"></i></a>
                             <ul class="dropdown-menu animated fadeInDown">
                                 <li class="title">
-                                    <button type="button" class="btn btn-primary" id="dc-add-server">点击新增服务器</button>
+                                    <button type="button" class="btn btn-primary" id="dc-add-server">新增服务器</button>
                                 </li>
                             </ul>
                         </li>
@@ -101,23 +102,13 @@
                             <div class="card-body">
                                 <div class="sub-title">服务名</div>
                                 <div>
-                                    <select style="width: 75%">
-                                        <option value="CT">123456789098765432156666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666661</option>
-                                        <option value="DE">Delaware</option>
-                                        <option value="FL">Florida</option>
-                                        <option value="GA">Georgia</option>
-                                        <option value="IN">Indiana</option>
+                                    <select style="width: 75%" id="dc-service-select-list">
                                     </select>
                                 </div>
 
                                 <div class="sub-title">方法名</div>
                                 <div>
-                                    <select  style="width: 75%" >
-                                        <option value="CT">Connecticut north</option>
-                                        <option value="DE">Delaware</option>
-                                        <option value="FL">Florida</option>
-                                        <option value="GA">Georgia</option>
-                                        <option value="IN">Indiana</option>
+                                    <select  style="width: 75%" id="dc-method-select-list">
                                     </select>
                                 </div>
 
@@ -139,7 +130,7 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="sub-title">控制台 <i class="fa fa-trash-o"></i></div>
+                                    <div class="sub-title">控制台 <i class="fa fa-trash-o dc-hover-icon" id="dc-clear-console"></i></div>
                                     <div>
                                         <textarea class="form-control" rows="8" id="dc-console"></textarea>
                                     </div>
