@@ -1,11 +1,6 @@
 // Make an ANSI Color converter.
 var ansiConv = new AnsiConverter();
 var tcpClient;
-var ipList = [
-    {ip:'localhost',port:20881},
-    {ip:'10.204.8.56',port:20881},
-    {ip:'10.204.8.57',port:20881},
-];
 
 function getListTemplate(ip, port){
     if(isEmptyStr(ip) || isEmptyStr(port)){
@@ -28,13 +23,24 @@ function getListTemplate(ip, port){
 }
 
 function createList() {
-    $("#dc-connect-list").html('');
-    for ( var i = 0; i <ipList.length; i++){
-        var ip = ipList[i].ip;
-        var port = ipList[i].port;
-        var item = getListTemplate(ip, port);
-        $("#dc-connect-list").append(item);
-    }
+    chrome.storage.sync.get(['dc-connect-list'], function(ipList) {
+        ipList = ipList['dc-connect-list'];
+        $("#dc-connect-list").html('');
+        for ( var i = 0; i <ipList.length; i++){
+            var ip = ipList[i].ip;
+            var port = ipList[i].port;
+            var item = getListTemplate(ip, port);
+            $("#dc-connect-list").append(item);
+        }
+        $(".dc-click-item").on("click", function () {
+            $("li.active").removeClass("active");
+            $(this).parent().addClass("active");
+            var ip = $(this).attr("data-ip");
+            var port = $(this).attr("data-port");
+            setCurrent(ip, port);
+        });
+    });
+
 }
 function setCurrent(current_ip, current_port){
     $("#dc-ip").val(current_ip);
@@ -43,13 +49,7 @@ function setCurrent(current_ip, current_port){
 }
 $(document).ready(function(){
     createList();
-    $(".dc-click-item").on("click", function () {
-        $("li.active").removeClass("active");
-        $(this).parent().addClass("active");
-         var ip = $(this).attr("data-ip");
-         var port = $(this).attr("data-port");
-         setCurrent(ip, port);
-    });
+
     $("#dc-invoke").click(function () {
         if(!hasConnect()){
             log("has not connected");
@@ -100,12 +100,28 @@ $(document).ready(function(){
         var dcAddIp = $("#dc-add-ip").val();
         var dcAddPort = $("#dc-add-port").val();
         if(isEmptyStr(dcAddIp) || isEmptyStr(dcAddPort)){
-            alert("ip 和 port 都是必填项");
+            log("ip 和 port 都是必填项");
+            return;
         }
         setCurrent(dcAddIp, dcAddPort);
         var newItem = {ip: dcAddIp, port : dcAddPort};
-        ipList.push(newItem);
-        createList();
+
+        chrome.storage.sync.get(['dc-connect-list'], function(result) {
+            var ipList = result['dc-connect-list'];
+            if(ipList && ipList instanceof Array){
+                ipList.push(newItem);
+            }else{
+                ipList = [];
+                ipList.push(newItem);
+            }
+            chrome.storage.sync.set({'dc-connect-list': ipList}, function() {
+                log(ipList +  " are store ");
+                createList();
+            });
+
+
+        });
+
     });
     $("#dc-service-select-list").select2({
         debug:true,
